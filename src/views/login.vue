@@ -20,7 +20,7 @@
                   <el-input placeholder="请输入密码" v-model="pwd" size="large" class="pwd" show-password></el-input>
               </div>
               <div id="login-box-submit">
-                  <el-button type="primary" size="medium" :loading="false" id="submit">登录</el-button>
+                  <el-button type="primary" size="medium" :loading="false" id="submit" @click="login">登录</el-button>
                   <el-button type="danger" size="medium" id="exit">取消</el-button>
               </div>
           </div>
@@ -29,17 +29,32 @@
 </template>
 
 <script>
+    import loginApi from "@/apis/loginApi";
 export default {
     name: 'HelloWorld',
     data(){
       return {
           user : '',
-          pwd : ''
+          pwd : '',
+          tip : ''
       }
     },
      props: {
       msg: String
   },
+    methods:{
+        login(){
+            loginApi.checkLogin(this.user,this.pwd,(cb) => {
+                if (cb.status == 0) {
+                    localStorage.setItem("user",this.user);
+                    this.$message('登录成功');
+                    this.$router.push('/index');
+                } else {
+                    this.$message('账号或密码错误');
+                }
+            });
+        }
+    },
     mounted(){
         document.body.style.backgroundColor="#409EFF";
     }
@@ -49,6 +64,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #login-header>h1{
+    text-align: center;
     margin-top: 60px;
     color: white;
     font-size: 50px;
@@ -67,6 +83,7 @@ export default {
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     padding-top:40px ;
     box-sizing: border-box;
+    text-align: center;
 }
 #login-box-pwd,#login-box-user{
     height: 60px;
